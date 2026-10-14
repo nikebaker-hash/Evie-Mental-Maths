@@ -1,0 +1,6631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Evie's Mental Maths</title>
+
+<style>
+*{box-sizing:border-box}
+
+:root{
+  --purple:#6954b4;
+  --light:#f3f0ff;
+  --green:#15975b;
+  --ink:#25233c;
+  --muted:#737184;
+  --red:#c34444;
+  --amber:#b47d15;
+  --line:#e7e3f1;
+}
+
+body{
+  margin:0;
+  background:#f7f6fc;
+  color:var(--ink);
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+.app{
+  max-width:700px;
+  margin:auto;
+  min-height:100vh;
+  padding:16px;
+}
+
+h1{
+  text-align:center;
+  font-size:27px;
+  margin:12px 0;
+}
+
+h2{font-size:20px}
+h3{font-size:17px}
+
+.subtitle{
+  text-align:center;
+  color:var(--muted);
+}
+
+.card{
+  background:white;
+  border-radius:20px;
+  padding:20px;
+  margin:15px 0;
+  box-shadow:0 4px 18px #24203c0c;
+}
+
+button{
+  font:inherit;
+  border:0;
+  cursor:pointer;
+  touch-action:manipulation;
+}
+
+.btn{
+  display:block;
+  width:100%;
+  padding:15px;
+  margin-top:10px;
+  border-radius:13px;
+  background:var(--light);
+  color:var(--purple);
+  font-weight:bold;
+}
+
+.primary{
+  background:var(--purple);
+  color:white;
+}
+
+.green{
+  background:var(--green);
+  color:white;
+}
+
+.hidden{
+  display:none!important;
+}
+
+.choices{
+  display:grid;
+  gap:9px;
+}
+
+.modes{
+  grid-template-columns:repeat(3,1fr);
+}
+
+.levels{
+  grid-template-columns:repeat(4,1fr);
+}
+
+.lengths{
+  grid-template-columns:repeat(4,1fr);
+}
+
+.choice{
+  padding:16px 4px;
+  border:2px solid transparent;
+  border-radius:13px;
+  background:var(--light);
+  color:var(--purple);
+  font-weight:bold;
+}
+
+.choice.selected{
+  border-color:var(--purple);
+  background:#e8e1ff;
+}
+
+.mode{
+  min-height:72px;
+  font-size:14px;
+}
+
+.level-choice{
+  padding:13px 3px;
+  font-size:16px;
+}
+
+.level-choice small{
+  display:block;
+  font-size:10px;
+  margin-top:4px;
+  font-weight:normal;
+}
+
+.length-choice{
+  font-size:22px;
+}
+
+.length-choice small{
+  display:block;
+  font-size:11px;
+  margin-top:5px;
+  font-weight:normal;
+}
+
+.small{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.center{
+  text-align:center;
+}
+
+.level-info{
+  background:#faf9ff;
+  border-radius:12px;
+  padding:12px;
+  margin-top:10px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.5;
+}
+
+.topline{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  align-items:center;
+  font-size:13px;
+  font-weight:bold;
+  color:var(--muted);
+}
+
+.quiz-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:8px;
+}
+
+.quiz-title{
+  font-weight:bold;
+  color:var(--muted);
+}
+
+.exit-btn{
+  padding:8px 11px;
+  border-radius:10px;
+  background:#ece9f5;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:bold;
+}
+
+.progress-track{
+  background:#eae7f6;
+  border-radius:20px;
+  height:11px;
+  margin:13px 0;
+  overflow:hidden;
+}
+
+.progress-fill{
+  height:100%;
+  width:0%;
+  background:var(--purple);
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.stat,
+.metric{
+  text-align:center;
+  padding:12px 5px;
+  border-radius:13px;
+  background:var(--light);
+}
+
+.stat strong,
+.metric strong{
+  display:block;
+  font-size:23px;
+  color:var(--purple);
+}
+
+.stat span,
+.metric span{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  margin-top:5px;
+}
+
+.question-card{
+  text-align:center;
+  padding:27px 5px;
+}
+
+.question{
+  font-size:clamp(32px,8vw,52px);
+  font-weight:800;
+  white-space:nowrap;
+  letter-spacing:-1px;
+}
+
+.answer-value{
+  color:var(--purple);
+}
+
+.keypad{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+
+.key{
+  background:white;
+  color:var(--ink);
+  border-radius:15px;
+  border:1px solid #e8e6f1;
+  min-height:67px;
+  font-size:29px;
+  font-weight:bold;
+  box-shadow:0 3px 0 #e8e6f1;
+}
+
+.key:active{
+  transform:translateY(2px);
+}
+
+.key.tick{
+  background:var(--green);
+  color:white;
+  box-shadow:0 3px 0 #087846;
+}
+
+.key.delete{
+  background:#fff0ee;
+  color:#bd4d4d;
+}
+
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.grid3{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+
+.big-score{
+  font-size:65px;
+  text-align:center;
+  color:var(--purple);
+  font-weight:900;
+  margin:12px;
+}
+
+.review-item{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:12px 0;
+  border-bottom:1px solid #eee;
+}
+
+.review-item:last-child{
+  border-bottom:0;
+}
+
+.bad{color:var(--red)}
+.slow{color:var(--amber)}
+.good{color:var(--green)}
+
+.history-row{
+  display:grid;
+  grid-template-columns:1fr auto auto auto;
+  gap:10px;
+  border-bottom:1px solid #eee;
+  padding:12px 0;
+  align-items:center;
+  font-size:13px;
+}
+
+.delete-test{
+  background:#fff0f0;
+  color:var(--red);
+  border-radius:8px;
+  padding:7px 9px;
+  font-size:11px;
+  font-weight:bold;
+}
+
+select{
+  padding:12px;
+  border:1px solid #d9d3ed;
+  border-radius:10px;
+  background:white;
+  font-size:15px;
+  width:100%;
+}
+
+input[type=file]{
+  display:none;
+}
+
+.chart-wrap{
+  overflow-x:auto;
+}
+
+canvas{
+  width:100%;
+  max-width:100%;
+  height:220px;
+  display:block;
+}
+
+.chart-section{
+  margin-top:22px;
+}
+
+.chart-title{
+  margin:0 0 6px;
+  font-size:16px;
+}
+
+.legend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin:8px 0 0;
+  font-size:11px;
+  color:var(--muted);
+}
+
+.legend span::before{
+  content:"";
+  display:inline-block;
+  width:18px;
+  height:3px;
+  margin-right:5px;
+  vertical-align:middle;
+  background:currentColor;
+}
+
+.legend .acc{color:#6954b4}
+.legend .fast{color:#15975b}
+.legend .speed{color:#b47d15}
+
+.difficulty-row{
+  display:grid;
+  grid-template-columns:1.4fr 1fr 1fr 1fr;
+  gap:5px;
+  padding:11px 0;
+  border-bottom:1px solid var(--line);
+  font-size:12px;
+  align-items:center;
+}
+
+.difficulty-row.header{
+  font-weight:bold;
+  color:var(--muted);
+}
+
+.difficulty-badge{
+  display:inline-block;
+  min-width:34px;
+  text-align:center;
+  padding:5px 8px;
+  border-radius:9px;
+  background:var(--light);
+  color:var(--purple);
+  font-weight:bold;
+}
+
+@media(max-width:500px){
+
+  .app{padding:10px}
+  .card{padding:15px}
+  .key{min-height:60px}
+  .question{font-size:30px}
+
+  .levels{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .grid3{
+    grid-template-columns:1fr;
+  }
+
+  .history-row{
+    grid-template-columns:1fr auto auto;
+  }
+
+  .history-row .delete-test{
+    grid-column:1 / -1;
+    width:100%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- HOME -->
+<section id="home">
+
+<h1>🌟 Evie's Mental Maths</h1>
+
+<p class="subtitle">
+Let's get quicker every day!
+</p>
+
+<div class="card">
+
+<h2>Choose arithmetic</h2>
+
+<div class="choices modes">
+
+<button
+class="choice mode"
+data-mode="add">
+➕<br>Addition
+</button>
+
+<button
+class="choice mode"
+data-mode="sub">
+➖<br>Subtraction
+</button>
+
+<button
+class="choice mode selected"
+data-mode="mixed">
+🔀<br>Mixed
+</button>
+
+</div>
+
+
+<h2 style="margin-top:24px">
+Choose level
+</h2>
+
+<div class="choices levels">
+
+<button
+class="choice level-choice"
+data-level="1">
+Level 1
+<small>Basic facts</small>
+</button>
+
+<button
+class="choice level-choice"
+data-level="2">
+Level 2
+<small>1-digit step</small>
+</button>
+
+<button
+class="choice level-choice"
+data-level="3">
+Level 3
+<small>2-digit challenge</small>
+</button>
+
+<button
+class="choice level-choice selected"
+data-level="4">
+Level 4
+<small>Full mix</small>
+</button>
+
+</div>
+
+<div
+class="level-info"
+id="levelDescription">
+</div>
+
+
+<h2 style="margin-top:25px">
+How many questions?
+</h2>
+
+<div class="choices lengths">
+
+<button
+class="choice length-choice"
+data-length="20">
+20
+<small>Quick</small>
+</button>
+
+<button
+class="choice length-choice selected"
+data-length="30">
+30
+<small>Daily</small>
+</button>
+
+<button
+class="choice length-choice"
+data-length="50">
+50
+<small>Longer</small>
+</button>
+
+<button
+class="choice length-choice"
+data-length="100">
+100
+<small>Full</small>
+</button>
+
+</div>
+
+
+<p
+class="small center"
+id="modeDescription">
+</p>
+
+
+<button
+class="btn primary"
+id="startBtn">
+Start Challenge →
+</button>
+
+<button
+class="btn hidden"
+id="resumeBtn">
+Resume Unfinished Challenge
+</button>
+
+<button
+class="btn hidden"
+id="lastResultBtn">
+🏆 View Last Result
+</button>
+
+<button
+class="btn"
+id="dashboardBtn">
+📊 Progress Dashboard
+</button>
+
+</div>
+
+</section>
+
+
+<!-- QUIZ -->
+<section
+id="quiz"
+class="hidden">
+
+<div class="quiz-header">
+
+<div class="quiz-title">
+🌟 Evie's Challenge
+</div>
+
+<button
+class="exit-btn"
+id="pauseBtn">
+Save & Exit
+</button>
+
+</div>
+
+
+<div class="card">
+
+<div class="topline">
+
+<span id="questionCounter"></span>
+
+<span id="quizMode"></span>
+
+<span id="progressPct"></span>
+
+</div>
+
+
+<div class="progress-track">
+
+<div
+class="progress-fill"
+id="progressFill">
+</div>
+
+</div>
+
+
+<div class="stats">
+
+<div class="stat">
+<strong id="answeredCount">0</strong>
+<span>Answered</span>
+</div>
+
+<div class="stat">
+<strong id="remainingCount">30</strong>
+<span>Remaining</span>
+</div>
+
+<div class="stat">
+<strong id="accuracyCount">—</strong>
+<span>Correct</span>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card question-card">
+
+<div
+id="questionText"
+class="question"
+aria-live="polite">
+</div>
+
+</div>
+
+
+<div class="keypad">
+
+<button class="key" data-key="1">1</button>
+<button class="key" data-key="2">2</button>
+<button class="key" data-key="3">3</button>
+
+<button class="key" data-key="4">4</button>
+<button class="key" data-key="5">5</button>
+<button class="key" data-key="6">6</button>
+
+<button class="key" data-key="7">7</button>
+<button class="key" data-key="8">8</button>
+<button class="key" data-key="9">9</button>
+
+<button class="key delete" data-key="back">⌫</button>
+<button class="key" data-key="0">0</button>
+<button class="key tick" data-key="enter">✓</button>
+
+</div>
+
+</section>
+
+
+<!-- RESULTS -->
+<section
+id="results"
+class="hidden">
+
+<h1>🎉 Challenge Complete!</h1>
+
+<p class="subtitle">
+Great work, Evie!
+</p>
+
+
+<div class="card">
+
+<p
+class="center"
+id="resultDescription">
+</p>
+
+<div
+class="big-score"
+id="finalScore">
+</div>
+
+
+<div class="grid3">
+
+<div class="metric">
+<strong id="finalAccuracy"></strong>
+<span>Accuracy</span>
+</div>
+
+<div class="metric">
+<strong id="finalFastAccuracy"></strong>
+<span>Correct under 10s</span>
+</div>
+
+<div class="metric">
+<strong id="finalAverage"></strong>
+<span>Average seconds</span>
+</div>
+
+</div>
+
+
+<div
+class="grid2"
+style="margin-top:10px">
+
+<div class="metric">
+<strong id="finalTime"></strong>
+<span>Total time</span>
+</div>
+
+<div class="metric">
+<strong id="finalCorrect"></strong>
+<span>Correct answers</span>
+</div>
+
+</div>
+
+</div>
+
+
+<h2>
+Questions to practise
+</h2>
+
+<div
+class="card"
+id="reviewList">
+</div>
+
+
+<button
+class="btn green"
+id="copySummaryBtn">
+Copy Summary for ChatGPT
+</button>
+
+<button
+class="btn"
+id="shareResultsBtn">
+Share Results
+</button>
+
+<button
+class="btn"
+id="exportSessionBtn">
+Download Excel Results
+</button>
+
+<button
+class="btn primary"
+id="resultsDashboardBtn">
+Progress Dashboard
+</button>
+
+<button
+class="btn"
+id="resultsHomeBtn">
+Back Home
+</button>
+
+</section>
+
+
+<!-- DASHBOARD -->
+<section
+id="dashboard"
+class="hidden">
+
+<h1>📊 Evie's Progress</h1>
+
+<p class="subtitle">
+Progress by question difficulty
+</p>
+
+
+<div class="card">
+
+<h3>
+Compare challenges
+</h3>
+
+<select id="dashboardFilter">
+
+<option
+value="all"
+selected>
+All tests
+</option>
+
+<option value="20">
+20 questions
+</option>
+
+<option value="30">
+30 questions
+</option>
+
+<option value="50">
+50 questions
+</option>
+
+<option value="100">
+100 questions
+</option>
+
+</select>
+
+</div>
+
+
+<div class="card">
+
+<div class="grid3">
+
+<div class="metric">
+<strong id="overallAccuracy">—</strong>
+<span>Accuracy</span>
+</div>
+
+<div class="metric">
+<strong id="overallFastAccuracy">—</strong>
+<span>Correct under 10s</span>
+</div>
+
+<div class="metric">
+<strong id="overallSpeed">—</strong>
+<span>Avg seconds/question</span>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>
+Difficulty snapshot
+</h2>
+
+<div class="difficulty-row header">
+
+<div>Difficulty</div>
+<div>Accuracy</div>
+<div>Under 10s</div>
+<div>Speed</div>
+
+</div>
+
+<div id="difficultySnapshot"></div>
+
+</div>
+
+
+<div class="card">
+
+<h2>
+All questions
+</h2>
+
+<div class="chart-section">
+
+<h3 class="chart-title">
+Accuracy & fluency
+</h3>
+
+<div class="chart-wrap">
+
+<canvas
+id="allAccuracyChart"
+width="640"
+height="220">
+</canvas>
+
+</div>
+
+<div class="legend">
+
+<span class="acc">
+Accuracy
+</span>
+
+<span class="fast">
+Correct under 10s
+</span>
+
+</div>
+
+</div>
+
+
+<div class="chart-section">
+
+<h3 class="chart-title">
+Average speed
+</h3>
+
+<div class="chart-wrap">
+
+<canvas
+id="allSpeedChart"
+width="640"
+height="220">
+</canvas>
+
+</div>
+
+<div class="legend">
+
+<span class="speed">
+Seconds/question
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div id="difficultyCharts"></div>
+
+
+<div class="card">
+
+<h3>
+Recent challenges
+</h3>
+
+<div id="historyList"></div>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Backup & Export
+</h3>
+
+<button
+class="btn green"
+id="exportAllBtn">
+Export All Results to Excel
+</button>
+
+<button
+class="btn"
+id="backupBtn">
+Download Full Backup
+</button>
+
+<button
+class="btn"
+id="importBtn">
+Restore From Backup
+</button>
+
+<input
+type="file"
+id="importFile"
+accept=".json,application/json">
+
+</div>
+
+
+<button
+class="btn primary"
+id="dashboardHomeBtn">
+Back Home
+</button>
+
+</section>
+
+</div>
+
+
+<script>
+"use strict";
+
+
+// ======================================
+// SETTINGS
+// ======================================
+
+const SLOW_LIMIT = 10;
+
+// Same key keeps existing history.
+const STORAGE_KEY =
+"evieMentalMathsV4";
+
+const $ =
+id =>
+document.getElementById(id);
+
+
+let selectedMode =
+"mixed";
+
+let selectedLevel =
+4;
+
+let selectedLength =
+30;
+
+let active =
+null;
+
+let answer =
+"";
+
+let questionStarted =
+0;
+
+let currentResults =
+null;
+
+let submitting =
+false;
+
+let resultsScreenReadyAt =
+0;
+
+
+let database = {
+
+sessions:[],
+
+active:null,
+
+lastCompleted:null
+
+};
+
+
+// ======================================
+// DISPLAY NAMES
+// ======================================
+
+const MODE_NAMES = {
+
+add:
+"Addition",
+
+sub:
+"Subtraction",
+
+mixed:
+"Mixed"
+
+};
+
+
+const DIFFICULTY_NAMES = {
+
+D1:
+"D1 · Easy",
+
+D2:
+"D2 · Standard",
+
+D3:
+"D3 · Challenging",
+
+D4:
+"D4 · Advanced"
+
+};
+
+
+// ======================================
+// MODE DESCRIPTIONS
+// ======================================
+
+const MODE_DESCRIPTIONS = {
+
+add:
+"Addition only. The selected level controls the practice structure.",
+
+sub:
+"Subtraction only. The selected level controls the practice structure.",
+
+mixed:
+"Addition and subtraction at the same selected level."
+
+};
+
+
+// ======================================
+// LEVEL DESCRIPTION
+// ======================================
+
+function getLevelDescription(){
+
+if(
+selectedLevel === 4
+){
+
+return (
+"Level 4 is the full benchmark quiz. "
++
+"Its difficulty mix is fixed at "
++
+"10% D1, 20% D2, 35% D3 and 35% D4."
+);
+
+}
+
+
+if(
+selectedMode === "add"
+){
+
+const descriptions = {
+
+1:
+"Level 1: single-digit additions which cross 10, such as 7+6, 8+5 and 9+7.",
+
+2:
+"Level 2: two-digit + one-digit additions which cross a ten, such as 27+6, 48+7 and 63+9.",
+
+3:
+"Level 3: two-digit + two-digit additions requiring carrying, such as 36+27, 48+35 and 57+26."
+
+};
+
+return descriptions[
+selectedLevel
+];
+
+}
+
+
+if(
+selectedMode === "sub"
+){
+
+const descriptions = {
+
+1:
+"Level 1: basic crossing-10 facts such as 15−8, 11−6 and 18−9. Extra weighting towards 11–13.",
+
+2:
+"Level 2: two-digit − one-digit subtraction crossing a ten, such as 31−7, 42−8 and 53−6.",
+
+3:
+"Level 3: two-digit − two-digit subtraction requiring borrowing, such as 52−28, 63−39 and 84−57."
+
+};
+
+return descriptions[
+selectedLevel
+];
+
+}
+
+
+const descriptions = {
+
+1:
+"Level 1 Mixed: basic crossing-10 addition and subtraction facts.",
+
+2:
+"Level 2 Mixed: two-digit numbers with a one-digit addition or subtraction crossing a ten.",
+
+3:
+"Level 3 Mixed: two-digit addition with carrying and two-digit subtraction with borrowing."
+
+};
+
+
+return descriptions[
+selectedLevel
+];
+
+}
+
+
+// ======================================
+// STORAGE
+// ======================================
+
+function loadDatabase(){
+
+try{
+
+const saved =
+localStorage.getItem(
+STORAGE_KEY
+);
+
+if(!saved)return;
+
+
+const parsed =
+JSON.parse(saved);
+
+
+database.sessions =
+
+Array.isArray(
+parsed.sessions
+)
+
+? parsed.sessions
+
+: [];
+
+
+database.active =
+parsed.active || null;
+
+
+database.lastCompleted =
+parsed.lastCompleted || null;
+
+
+}catch(e){
+
+console.warn(
+"Could not load results",
+e
+);
+
+}
+
+}
+
+
+function saveDatabase(){
+
+try{
+
+localStorage.setItem(
+
+STORAGE_KEY,
+
+JSON.stringify(
+database
+)
+
+);
+
+return true;
+
+}catch(e){
+
+alert(
+"Results could not be saved."
+);
+
+return false;
+
+}
+
+}
+
+
+function sessionLength(
+session
+){
+
+return session.questions.length;
+
+}
+
+
+// ======================================
+// SESSION LEVEL
+//
+// Old quizzes without a level
+// are treated as L4.
+// ======================================
+
+function getSessionLevel(
+session
+){
+
+if(
+
+Number(session.level) >= 1
+
+&&
+
+Number(session.level) <= 4
+
+){
+
+return Number(
+session.level
+);
+
+}
+
+
+if(
+
+Number(
+session.subtractionLevel
+) >= 1
+
+&&
+
+Number(
+session.subtractionLevel
+) <= 4
+
+){
+
+return Number(
+session.subtractionLevel
+);
+
+}
+
+
+return 4;
+
+}
+
+
+// ======================================
+// NAVIGATION
+// ======================================
+
+function show(screen){
+
+[
+"home",
+"quiz",
+"results",
+"dashboard"
+]
+.forEach(
+id=>{
+
+$(id)
+.classList
+.toggle(
+
+"hidden",
+
+id !== screen
+
+);
+
+}
+);
+
+
+window.scrollTo(
+0,
+0
+);
+
+}
+
+
+function updateResume(){
+
+$("resumeBtn")
+.classList
+.toggle(
+
+"hidden",
+
+!database.active
+
+);
+
+}
+
+
+function updateLastResultButton(){
+
+$("lastResultBtn")
+.classList
+.toggle(
+
+"hidden",
+
+!database.lastCompleted
+
+);
+
+}
+
+
+function goHome(){
+
+active =
+null;
+
+updateResume();
+
+updateLastResultButton();
+
+show(
+"home"
+);
+
+}
+
+
+// ======================================
+// RANDOM
+// ======================================
+
+function randomInt(
+min,
+max
+){
+
+return Math.floor(
+
+Math.random()
+*
+(max-min+1)
+
+)
++
+min;
+
+}
+
+
+function shuffleArray(
+array
+){
+
+for(
+let i=array.length-1;
+i>0;
+i--
+){
+
+const j =
+Math.floor(
+Math.random()*(i+1)
+);
+
+
+[
+array[i],
+array[j]
+]
+=
+[
+array[j],
+array[i]
+];
+
+}
+
+
+return array;
+
+}
+
+
+// ======================================
+// DIFFICULTY CLASSIFICATION
+//
+// ADDITION
+//
+// D1:
+// one addend is one digit,
+// no carrying
+//
+// D2:
+// both addends two digit,
+// no carrying
+//
+// D3:
+// one addend is one digit,
+// carrying
+//
+// D4:
+// both addends two digit,
+// carrying
+//
+//
+// SUBTRACTION
+//
+// D1:
+// one-digit subtraction,
+// no borrowing
+//
+// D2:
+// two-digit subtraction,
+// no borrowing
+//
+// D3:
+// one-digit subtraction,
+// borrowing
+//
+// D4:
+// two-digit subtraction,
+// borrowing
+// ======================================
+
+function classifyDifficulty(
+q
+){
+
+const a =
+Number(q.a);
+
+const b =
+Number(q.b);
+
+
+if(
+q.op === "add"
+){
+
+const carrying =
+
+(a%10)
++
+(b%10)
+>=
+10;
+
+
+const hasSingleDigitAddend =
+
+a < 10
+
+||
+
+b < 10;
+
+
+if(
+!carrying
+&&
+hasSingleDigitAddend
+){
+
+return "D1";
+
+}
+
+
+if(
+!carrying
+&&
+!hasSingleDigitAddend
+){
+
+return "D2";
+
+}
+
+
+if(
+carrying
+&&
+hasSingleDigitAddend
+){
+
+return "D3";
+
+}
+
+
+return "D4";
+
+}
+
+
+// subtraction
+
+const borrowing =
+
+(a%10)
+<
+(b%10);
+
+
+const oneDigitSubtraction =
+
+b < 10;
+
+
+if(
+!borrowing
+&&
+oneDigitSubtraction
+){
+
+return "D1";
+
+}
+
+
+if(
+!borrowing
+&&
+!oneDigitSubtraction
+){
+
+return "D2";
+
+}
+
+
+if(
+borrowing
+&&
+oneDigitSubtraction
+){
+
+return "D3";
+
+}
+
+
+return "D4";
+
+}
+
+
+// ======================================
+// GET QUESTION DIFFICULTY
+//
+// Allows old saved questions to be
+// classified automatically.
+// ======================================
+
+function getQuestionDifficulty(
+q
+){
+
+if(
+
+q.difficulty
+
+&&
+
+[
+"D1",
+"D2",
+"D3",
+"D4"
+]
+.includes(
+q.difficulty
+)
+
+){
+
+return q.difficulty;
+
+}
+
+
+return classifyDifficulty(
+q
+);
+
+}
+
+
+// ======================================
+// BUILD QUESTION
+// ======================================
+
+function buildQuestion(
+a,
+b,
+op,
+level,
+skill,
+forcedDifficulty=null
+){
+
+const q = {
+
+a,
+b,
+op,
+
+correct:
+
+op === "add"
+
+? a+b
+
+: a-b,
+
+level,
+
+skill,
+
+entered:null,
+
+right:null,
+
+seconds:null
+
+};
+
+
+q.difficulty =
+
+forcedDifficulty
+
+||
+
+classifyDifficulty(
+q
+);
+
+
+return q;
+
+}
+
+
+// ======================================
+// ADDITION L1
+//
+// Single digit + single digit,
+// crossing 10.
+// ======================================
+
+function makeAdditionLevel1(){
+
+let a;
+let b;
+
+
+do{
+
+a =
+randomInt(
+2,
+9
+);
+
+b =
+randomInt(
+2,
+9
+);
+
+}
+while(
+a+b < 10
+);
+
+
+return buildQuestion(
+
+a,
+b,
+"add",
+1,
+"Addition Level 1"
+
+);
+
+}
+
+
+// ======================================
+// ADDITION L2
+//
+// 2 digit + 1 digit,
+// carrying.
+// ======================================
+
+function makeAdditionLevel2(){
+
+let a;
+let b;
+
+
+do{
+
+a =
+randomInt(
+10,
+98
+);
+
+b =
+randomInt(
+2,
+9
+);
+
+}
+while(
+
+a+b >= 100
+
+||
+
+(a%10)+b < 10
+
+);
+
+
+return buildQuestion(
+
+a,
+b,
+"add",
+2,
+"Addition Level 2"
+
+);
+
+}
+
+
+// ======================================
+// ADDITION L3
+//
+// 2 digit + 2 digit,
+// carrying.
+// ======================================
+
+function makeAdditionLevel3(){
+
+let a;
+let b;
+
+
+do{
+
+a =
+randomInt(
+10,
+88
+);
+
+b =
+randomInt(
+10,
+88
+);
+
+}
+while(
+
+a+b >= 100
+
+||
+
+(a%10)
++
+(b%10)
+<
+10
+
+);
+
+
+return buildQuestion(
+
+a,
+b,
+"add",
+3,
+"Addition Level 3"
+
+);
+
+}
+
+
+// ======================================
+// SUBTRACTION L1
+//
+// Teen-number crossing facts.
+// Weighted towards 11–13.
+// ======================================
+
+function makeSubtractionLevel1(){
+
+let a;
+
+
+if(
+Math.random() < 0.60
+){
+
+a =
+randomInt(
+11,
+13
+);
+
+}
+else{
+
+a =
+randomInt(
+14,
+19
+);
+
+}
+
+
+let b;
+
+
+do{
+
+b =
+randomInt(
+2,
+9
+);
+
+}
+while(
+
+a-b < 1
+
+||
+
+a-b > 9
+
+||
+
+b <= (a%10)
+
+);
+
+
+return buildQuestion(
+
+a,
+b,
+"sub",
+1,
+"Subtraction Level 1"
+
+);
+
+}
+
+
+// ======================================
+// SUBTRACTION L2
+//
+// 2 digit − 1 digit,
+// borrowing.
+// ======================================
+
+function makeSubtractionLevel2(){
+
+let a;
+let b;
+
+
+do{
+
+a =
+randomInt(
+20,
+99
+);
+
+b =
+randomInt(
+2,
+9
+);
+
+}
+while(
+
+b <= (a%10)
+
+);
+
+
+return buildQuestion(
+
+a,
+b,
+"sub",
+2,
+"Subtraction Level 2"
+
+);
+
+}
+
+
+// ======================================
+// SUBTRACTION L3
+//
+// 2 digit − 2 digit,
+// borrowing.
+// ======================================
+
+function makeSubtractionLevel3(){
+
+let a;
+let b;
+
+
+do{
+
+a =
+randomInt(
+30,
+99
+);
+
+b =
+randomInt(
+11,
+a-1
+);
+
+}
+while(
+
+(b%10)
+<=
+(a%10)
+
+);
+
+
+return buildQuestion(
+
+a,
+b,
+"sub",
+3,
+"Subtraction Level 3"
+
+);
+
+}
+
+
+// ======================================
+// L4 ADDITION BY DIFFICULTY
+// ======================================
+
+function makeAdditionByDifficulty(
+difficulty
+){
+
+let a;
+let b;
+
+
+// D1
+// 2 digit + 1 digit,
+// no carrying.
+
+if(
+difficulty === "D1"
+){
+
+do{
+
+a =
+randomInt(
+10,
+98
+);
+
+b =
+randomInt(
+1,
+9
+);
+
+}
+while(
+
+a+b >= 100
+
+||
+
+(a%10)+b >= 10
+
+);
+
+
+return buildQuestion(
+
+a,
+b,
+"add",
+4,
+"Addition Level 4",
+"D1"
+
+);
+
+}
+
+
+// D2
+// 2 digit + 2 digit,
+// no carrying.
+
+if(
+difficulty === "D2"
+){
+
+do{
+
+a =
+randomInt(
+10,
+89
+);
+
+b =
+randomInt(
+10,
+89
+);
+
+}
+while(
+
+a+b >= 100
+
+||
+
+(a%10)+(b%10) >= 10
+
+);
+
+
+return buildQuestion(
+
+a,
+b,
+"add",
+4,
+"Addition Level 4",
+"D2"
+
+);
+
+}
+
+
+// D3
+// 2 digit + 1 digit,
+// carrying.
+
+if(
+difficulty === "D3"
+){
+
+do{
+
+a =
+randomInt(
+10,
+98
+);
+
+b =
+randomInt(
+2,
+9
+);
+
+}
+while(
+
+a+b >= 100
+
+||
+
+(a%10)+b < 10
+
+);
+
+
+return buildQuestion(
+
+a,
+b,
+"add",
+4,
+"Addition Level 4",
+"D3"
+
+);
+
+}
+
+
+// D4
+// 2 digit + 2 digit,
+// carrying.
+
+do{
+
+a =
+randomInt(
+10,
+89
+);
+
+b =
+randomInt(
+10,
+89
+);
+
+}
+while(
+
+a+b >= 100
+
+||
+
+(a%10)+(b%10) < 10
+
+);
+
+
+return buildQuestion(
+
+a,
+b,
+"add",
+4,
+"Addition Level 4",
+"D4"
+
+);
+
+}
+
+
+// ======================================
+// L4 SUBTRACTION BY DIFFICULTY
+// ======================================
+
+function makeSubtractionByDifficulty(
+difficulty
+){
+
+let a;
+let b;
+
+
+// D1
+// 2 digit − 1 digit,
+// no borrowing.
+
+if(
+difficulty === "D1"
+){
+
+do{
+
+a =
+randomInt(
+20,
+99
+);
+
+b =
+randomInt(
+1,
+9
+);
+
+}
+while(
+
+b > (a%10)
+
+);
+
+
+return buildQuestion(
+
+a,
+b,
+"sub",
+4,
+"Subtraction Level 4",
+"D1"
+
+);
+
+}
+
+
+// D2
+// 2 digit − 2 digit,
+// no borrowing.
+
+if(
+difficulty === "D2"
+){
+
+do{
+
+a =
+randomInt(
+20,
+99
+);
+
+b =
+randomInt(
+10,
+a
+);
+
+}
+while(
+
+(b%10)
+>
+(a%10)
+
+);
+
+
+return buildQuestion(
+
+a,
+b,
+"sub",
+4,
+"Subtraction Level 4",
+"D2"
+
+);
+
+}
+
+
+// D3
+// 2 digit − 1 digit,
+// borrowing.
+
+if(
+difficulty === "D3"
+){
+
+do{
+
+a =
+randomInt(
+20,
+99
+);
+
+b =
+randomInt(
+2,
+9
+);
+
+}
+while(
+
+b <= (a%10)
+
+);
+
+
+return buildQuestion(
+
+a,
+b,
+"sub",
+4,
+"Subtraction Level 4",
+"D3"
+
+);
+
+}
+
+
+// D4
+// 2 digit − 2 digit,
+// borrowing.
+
+do{
+
+a =
+randomInt(
+21,
+99
+);
+
+b =
+randomInt(
+10,
+a-1
+);
+
+}
+while(
+
+(b%10)
+<=
+(a%10)
+
+);
+
+
+return buildQuestion(
+
+a,
+b,
+"sub",
+4,
+"Subtraction Level 4",
+"D4"
+
+);
+
+}
+
+
+// ======================================
+// L4 DIFFICULTY COUNTS
+//
+// Target mix:
+// D1 = 10%
+// D2 = 20%
+// D3 = 35%
+// D4 = 35%
+// ======================================
+
+function getL4DifficultyCounts(
+length
+){
+
+const d1 =
+Math.round(
+length * 0.10
+);
+
+
+const d2 =
+Math.round(
+length * 0.20
+);
+
+
+const d3 =
+Math.floor(
+length * 0.35
+);
+
+
+const d4 =
+length
+-
+d1
+-
+d2
+-
+d3;
+
+
+return {
+
+D1:d1,
+D2:d2,
+D3:d3,
+D4:d4
+
+};
+
+}
+
+
+// ======================================
+// BUILD L4 QUESTION PLAN
+//
+// Addition:
+// exact D mix, all addition.
+//
+// Subtraction:
+// exact D mix, all subtraction.
+//
+// Mixed:
+// exact D mix overall,
+// with addition/subtraction split
+// as evenly as possible within each D.
+// ======================================
+
+function buildL4Plan(
+mode,
+length
+){
+
+const counts =
+getL4DifficultyCounts(
+length
+);
+
+
+const plan =
+[];
+
+
+const difficulties = [
+
+"D1",
+"D2",
+"D3",
+"D4"
+
+];
+
+
+if(
+mode === "add"
+){
+
+difficulties
+.forEach(
+difficulty=>{
+
+for(
+let i=0;
+i<counts[difficulty];
+i++
+){
+
+plan.push({
+
+op:"add",
+difficulty
+
+});
+
+}
+
+}
+);
+
+
+return shuffleArray(
+plan
+);
+
+}
+
+
+if(
+mode === "sub"
+){
+
+difficulties
+.forEach(
+difficulty=>{
+
+for(
+let i=0;
+i<counts[difficulty];
+i++
+){
+
+plan.push({
+
+op:"sub",
+difficulty
+
+});
+
+}
+
+}
+);
+
+
+return shuffleArray(
+plan
+);
+
+}
+
+
+// MIXED
+
+let extraToAddition =
+true;
+
+
+difficulties
+.forEach(
+difficulty=>{
+
+const count =
+counts[
+difficulty
+];
+
+
+let addCount =
+Math.floor(
+count/2
+);
+
+
+let subCount =
+Math.floor(
+count/2
+);
+
+
+if(
+count % 2 === 1
+){
+
+if(
+extraToAddition
+){
+
+addCount++;
+
+}
+else{
+
+subCount++;
+
+}
+
+
+extraToAddition =
+!extraToAddition;
+
+}
+
+
+for(
+let i=0;
+i<addCount;
+i++
+){
+
+plan.push({
+
+op:"add",
+difficulty
+
+});
+
+}
+
+
+for(
+let i=0;
+i<subCount;
+i++
+){
+
+plan.push({
+
+op:"sub",
+difficulty
+
+});
+
+}
+
+}
+);
+
+
+return shuffleArray(
+plan
+);
+
+}
+
+
+// ======================================
+// QUESTION BY LEVEL
+// ======================================
+
+function makeQuestionByLevel(
+mode,
+level
+){
+
+if(
+mode === "add"
+){
+
+if(level === 1){
+return makeAdditionLevel1();
+}
+
+if(level === 2){
+return makeAdditionLevel2();
+}
+
+return makeAdditionLevel3();
+
+}
+
+
+if(
+mode === "sub"
+){
+
+if(level === 1){
+return makeSubtractionLevel1();
+}
+
+if(level === 2){
+return makeSubtractionLevel2();
+}
+
+return makeSubtractionLevel3();
+
+}
+
+
+// MIXED L1-L3
+
+if(
+Math.random() < 0.5
+){
+
+if(level === 1){
+return makeAdditionLevel1();
+}
+
+if(level === 2){
+return makeAdditionLevel2();
+}
+
+return makeAdditionLevel3();
+
+}
+
+
+if(level === 1){
+return makeSubtractionLevel1();
+}
+
+if(level === 2){
+return makeSubtractionLevel2();
+}
+
+return makeSubtractionLevel3();
+
+}
+
+
+// ======================================
+// GENERATE QUESTIONS
+// ======================================
+
+function makeQuestions(
+mode,
+length,
+level
+){
+
+const questions =
+[];
+
+
+// L1-L3 targeted practice.
+
+if(
+level !== 4
+){
+
+for(
+let i=0;
+i<length;
+i++
+){
+
+questions.push(
+
+makeQuestionByLevel(
+mode,
+level
+)
+
+);
+
+}
+
+
+return questions;
+
+}
+
+
+// L4 uses a fixed difficulty plan.
+
+const plan =
+buildL4Plan(
+mode,
+length
+);
+
+
+plan.forEach(
+item=>{
+
+
+if(
+item.op === "add"
+){
+
+questions.push(
+
+makeAdditionByDifficulty(
+item.difficulty
+)
+
+);
+
+}
+else{
+
+questions.push(
+
+makeSubtractionByDifficulty(
+item.difficulty
+)
+
+);
+
+}
+
+}
+);
+
+
+return questions;
+
+}
+
+
+// ======================================
+// START
+// ======================================
+
+function startChallenge(){
+
+if(
+
+database.active
+
+&&
+
+!confirm(
+"Replace your unfinished challenge?"
+)
+
+){
+
+return;
+
+}
+
+
+active = {
+
+id:
+Date.now().toString()
++
+"_"
++
+Math.random()
+.toString(36)
+.slice(2,8),
+
+date:
+new Date()
+.toISOString(),
+
+mode:
+selectedMode,
+
+level:
+selectedLevel,
+
+length:
+selectedLength,
+
+questions:
+makeQuestions(
+selectedMode,
+selectedLength,
+selectedLevel
+),
+
+index:0,
+
+elapsed:0,
+
+finished:false
+
+};
+
+
+database.active =
+active;
+
+
+answer =
+"";
+
+
+saveDatabase();
+
+
+beginQuestion();
+
+}
+
+
+// ======================================
+// RESUME
+// ======================================
+
+function resumeChallenge(){
+
+if(
+!database.active
+)return;
+
+
+active =
+database.active;
+
+
+answer =
+"";
+
+
+beginQuestion();
+
+}
+
+
+// ======================================
+// TIMER
+// ======================================
+
+function beginQuestion(){
+
+questionStarted =
+performance.now();
+
+
+renderQuiz();
+
+
+show(
+"quiz"
+);
+
+}
+
+
+// ======================================
+// QUESTION DISPLAY
+// ======================================
+
+function renderAnswer(){
+
+if(
+!active
+)return;
+
+
+const q =
+
+active.questions[
+active.index
+];
+
+
+if(
+!q
+)return;
+
+
+const symbol =
+
+q.op === "add"
+
+? "+"
+
+: "−";
+
+
+const shown =
+
+answer === ""
+
+? "?"
+
+: answer;
+
+
+$("questionText")
+.innerHTML =
+
+`${q.a} ${symbol} ${q.b} = `
+
++
+
+`<span class="answer-value">${shown}</span>`;
+
+}
+
+
+// ======================================
+// SESSION LABEL
+// ======================================
+
+function getSessionLabel(
+session
+){
+
+const mode =
+
+MODE_NAMES[
+session.mode
+]
+
+||
+
+session.mode;
+
+
+return (
+
+mode
+
++
+
+" · Level "
+
++
+
+getSessionLevel(
+session
+)
+
+);
+
+}
+
+
+// ======================================
+// QUIZ DISPLAY
+// ======================================
+
+function renderQuiz(){
+
+if(
+!active
+)return;
+
+
+const index =
+active.index;
+
+
+const length =
+sessionLength(
+active
+);
+
+
+const completed =
+
+active.questions.slice(
+0,
+index
+);
+
+
+const correct =
+
+completed.filter(
+q=>q.right
+).length;
+
+
+$("quizMode")
+.textContent =
+
+getSessionLabel(
+active
+);
+
+
+$("questionCounter")
+.textContent =
+
+`Question ${index+1} / ${length}`;
+
+
+$("progressPct")
+.textContent =
+
+Math.round(
+index/length*100
+)
+
++
+"%";
+
+
+$("progressFill")
+.style.width =
+
+(index/length*100)
++
+"%";
+
+
+$("answeredCount")
+.textContent =
+index;
+
+
+$("remainingCount")
+.textContent =
+
+length-index;
+
+
+$("accuracyCount")
+.textContent =
+
+index
+
+?
+
+Math.round(
+correct/index*100
+)
++
+"%"
+
+:
+
+"—";
+
+
+renderAnswer();
+
+}
+
+
+// ======================================
+// KEYPAD
+// ======================================
+
+function handleKey(
+key
+){
+
+if(
+!active
+||
+submitting
+){
+
+return;
+
+}
+
+
+if(
+
+$("quiz")
+.classList
+.contains(
+"hidden"
+)
+
+){
+
+return;
+
+}
+
+
+if(
+key === "back"
+){
+
+answer =
+
+answer.slice(
+0,
+-1
+);
+
+}
+
+else if(
+key === "enter"
+){
+
+submitAnswer();
+
+return;
+
+}
+
+else if(
+/^[0-9]$/.test(
+key
+)
+){
+
+if(
+answer.length < 3
+){
+
+answer += key;
+
+}
+
+}
+
+
+renderAnswer();
+
+}
+
+
+document
+.querySelectorAll(
+"[data-key]"
+)
+.forEach(
+button=>{
+
+button
+.addEventListener(
+"click",
+()=>{
+
+handleKey(
+button.dataset.key
+);
+
+}
+);
+
+}
+);
+
+
+document
+.addEventListener(
+"keydown",
+e=>{
+
+if(
+
+$("quiz")
+.classList
+.contains(
+"hidden"
+)
+
+){
+
+return;
+
+}
+
+
+if(
+/^[0-9]$/.test(
+e.key
+)
+){
+
+e.preventDefault();
+
+handleKey(
+e.key
+);
+
+}
+
+else if(
+e.key === "Backspace"
+){
+
+e.preventDefault();
+
+handleKey(
+"back"
+);
+
+}
+
+else if(
+e.key === "Enter"
+){
+
+e.preventDefault();
+
+handleKey(
+"enter"
+);
+
+}
+
+}
+);
+
+
+// ======================================
+// SUBMIT ANSWER
+// ======================================
+
+function submitAnswer(){
+
+if(
+
+!active
+
+||
+
+answer === ""
+
+||
+
+submitting
+
+){
+
+return;
+
+}
+
+
+submitting =
+true;
+
+
+const q =
+
+active.questions[
+active.index
+];
+
+
+const seconds =
+
+(
+performance.now()
+-
+questionStarted
+)
+
+/
+1000;
+
+
+q.entered =
+Number(
+answer
+);
+
+
+q.right =
+
+q.entered ===
+q.correct;
+
+
+q.seconds =
+
+Math.round(
+seconds*100
+)
+
+/
+100;
+
+
+// Ensure every completed question
+// has difficulty stored.
+
+q.difficulty =
+
+getQuestionDifficulty(
+q
+);
+
+
+active.elapsed +=
+seconds;
+
+
+active.index++;
+
+
+answer =
+"";
+
+
+database.active =
+active;
+
+
+saveDatabase();
+
+
+if(
+
+active.index >=
+sessionLength(
+active
+)
+
+){
+
+finishChallenge();
+
+}
+
+else{
+
+questionStarted =
+performance.now();
+
+
+renderQuiz();
+
+}
+
+
+submitting =
+false;
+
+}
+
+
+// ======================================
+// METRICS
+// ======================================
+
+function percentage(
+session
+){
+
+const correct =
+
+session.questions
+.filter(
+q=>q.right
+)
+.length;
+
+
+return Math.round(
+
+correct
+
+/
+
+sessionLength(
+session
+)
+
+*
+
+100
+
+);
+
+}
+
+
+function fastCorrectPercentage(
+session
+){
+
+const fastCorrect =
+
+session.questions
+.filter(
+q=>
+
+q.right
+
+&&
+
+Number(q.seconds)
+<
+SLOW_LIMIT
+
+)
+.length;
+
+
+return Math.round(
+
+fastCorrect
+
+/
+
+sessionLength(
+session
+)
+
+*
+
+100
+
+);
+
+}
+
+
+function averageSpeed(
+session
+){
+
+return (
+
+session.questions
+.reduce(
+
+(sum,q)=>
+
+sum
++
+Number(
+q.seconds || 0
+),
+
+0
+
+)
+
+/
+
+sessionLength(
+session
+)
+
+);
+
+}
+
+
+function formatTime(
+seconds
+){
+
+seconds =
+Math.floor(
+seconds
+);
+
+
+const minutes =
+
+Math.floor(
+seconds/60
+);
+
+
+const remainder =
+
+seconds%60;
+
+
+return (
+
+minutes
+
++
+
+":"
+
++
+
+String(
+remainder
+)
+.padStart(
+2,
+"0"
+)
+
+);
+
+}
+
+
+// ======================================
+// FINISH
+// ======================================
+
+function finishChallenge(){
+
+if(
+!active
+)return;
+
+
+const completedSession =
+
+JSON.parse(
+
+JSON.stringify(
+active
+)
+
+);
+
+
+completedSession.finished =
+true;
+
+
+completedSession.completedAt =
+
+new Date()
+.toISOString();
+
+
+completedSession.questions
+.forEach(
+q=>{
+
+q.difficulty =
+
+getQuestionDifficulty(
+q
+);
+
+}
+);
+
+
+database.sessions.push(
+
+completedSession
+
+);
+
+
+database.lastCompleted =
+
+completedSession;
+
+
+database.active =
+null;
+
+
+saveDatabase();
+
+
+currentResults =
+
+completedSession;
+
+
+active =
+null;
+
+
+answer =
+"";
+
+
+renderResults();
+
+
+updateResume();
+
+updateLastResultButton();
+
+
+resultsScreenReadyAt =
+
+Date.now()
++
+900;
+
+
+show(
+"results"
+);
+
+}
+
+
+// ======================================
+// RESULTS
+// ======================================
+
+function renderResults(){
+
+const session =
+currentResults;
+
+
+if(
+!session
+)return;
+
+
+const correct =
+
+session.questions
+.filter(
+q=>q.right
+)
+.length;
+
+
+$("resultDescription")
+.textContent =
+
+`${getSessionLabel(session)} · ${sessionLength(session)} questions`;
+
+
+$("finalScore")
+.textContent =
+
+percentage(
+session
+)
++
+"%";
+
+
+$("finalAccuracy")
+.textContent =
+
+percentage(
+session
+)
++
+"%";
+
+
+$("finalFastAccuracy")
+.textContent =
+
+fastCorrectPercentage(
+session
+)
++
+"%";
+
+
+$("finalAverage")
+.textContent =
+
+averageSpeed(
+session
+)
+.toFixed(1)
++
+"s";
+
+
+$("finalTime")
+.textContent =
+
+formatTime(
+session.elapsed
+);
+
+
+$("finalCorrect")
+.textContent =
+
+`${correct}/${sessionLength(session)}`;
+
+
+const review =
+
+session.questions
+.filter(
+q=>
+
+!q.right
+
+||
+
+q.seconds >=
+SLOW_LIMIT
+
+);
+
+
+if(
+!review.length
+){
+
+$("reviewList")
+.innerHTML =
+
+`
+<p class="good">
+Brilliant! Every answer was correct and under 10 seconds.
+</p>
+`;
+
+return;
+
+}
+
+
+$("reviewList")
+.innerHTML =
+
+review
+.map(
+q=>{
+
+const symbol =
+
+q.op === "add"
+
+? "+"
+
+: "−";
+
+
+const status =
+
+!q.right
+
+? "Incorrect"
+
+: "Slow";
+
+
+const css =
+
+!q.right
+
+? "bad"
+
+: "slow";
+
+
+const difficulty =
+
+getQuestionDifficulty(
+q
+);
+
+
+return `
+
+<div class="review-item">
+
+<div>
+
+<strong>
+${q.a} ${symbol} ${q.b}
+= ${q.correct}
+</strong>
+
+<div class="small">
+Evie's answer:
+${q.entered}
+·
+${difficulty}
+</div>
+
+</div>
+
+<div style="text-align:right">
+
+<strong class="${css}">
+${status}
+</strong>
+
+<div class="small">
+${Number(q.seconds).toFixed(1)}s
+</div>
+
+</div>
+
+</div>
+
+`;
+
+}
+)
+.join("");
+
+}
+
+
+// ======================================
+// LAST RESULT
+// ======================================
+
+function viewLastResult(){
+
+if(
+!database.lastCompleted
+)return;
+
+
+currentResults =
+
+database.lastCompleted;
+
+
+renderResults();
+
+
+resultsScreenReadyAt =
+
+Date.now()
++
+300;
+
+
+show(
+"results"
+);
+
+}
+
+
+// ======================================
+// DASHBOARD FILTER
+// ======================================
+
+function getFilteredSessions(){
+
+const filter =
+
+$("dashboardFilter")
+.value;
+
+
+return database.sessions
+
+.filter(
+session=>
+
+filter === "all"
+
+||
+
+sessionLength(
+session
+)
+===
+Number(
+filter
+)
+
+)
+
+.sort(
+(a,b)=>
+
+new Date(a.date)
+
+-
+
+new Date(b.date)
+
+);
+
+}
+
+
+// ======================================
+// AGGREGATE
+// ======================================
+
+function aggregateMetrics(
+questions
+){
+
+if(
+!questions.length
+){
+
+return {
+
+accuracy:null,
+
+fast:null,
+
+speed:null
+
+};
+
+}
+
+
+const correct =
+
+questions
+.filter(
+q=>q.right
+)
+.length;
+
+
+const fastCorrect =
+
+questions
+.filter(
+q=>
+
+q.right
+
+&&
+
+Number(q.seconds)
+<
+SLOW_LIMIT
+
+)
+.length;
+
+
+const speed =
+
+questions
+.reduce(
+
+(sum,q)=>
+
+sum
++
+Number(
+q.seconds || 0
+),
+
+0
+
+)
+
+/
+
+questions.length;
+
+
+return {
+
+accuracy:
+
+correct
+/
+questions.length
+*
+100,
+
+fast:
+
+fastCorrect
+/
+questions.length
+*
+100,
+
+speed
+
+};
+
+}
+
+
+// ======================================
+// DIFFICULTY QUESTIONS
+// ======================================
+
+function getQuestionsByDifficulty(
+sessions,
+difficulty
+){
+
+const questions =
+[];
+
+
+sessions.forEach(
+session=>{
+
+session.questions
+.forEach(
+q=>{
+
+if(
+
+getQuestionDifficulty(
+q
+)
+
+===
+
+difficulty
+
+){
+
+questions.push(
+q
+);
+
+}
+
+}
+);
+
+}
+);
+
+
+return questions;
+
+}
+
+
+// ======================================
+// DASHBOARD
+// ======================================
+
+function showDashboard(){
+
+renderDashboard();
+
+show(
+"dashboard"
+);
+
+}
+
+
+function renderDashboard(){
+
+const sessions =
+
+getFilteredSessions();
+
+
+const allQuestions =
+
+sessions
+.flatMap(
+s=>s.questions
+);
+
+
+const overall =
+
+aggregateMetrics(
+allQuestions
+);
+
+
+$("overallAccuracy")
+.textContent =
+
+overall.accuracy === null
+
+? "—"
+
+:
+
+Math.round(
+overall.accuracy
+)
++
+"%";
+
+
+$("overallFastAccuracy")
+.textContent =
+
+overall.fast === null
+
+? "—"
+
+:
+
+Math.round(
+overall.fast
+)
++
+"%";
+
+
+$("overallSpeed")
+.textContent =
+
+overall.speed === null
+
+? "—"
+
+:
+
+overall.speed
+.toFixed(1)
++
+"s";
+
+
+renderDifficultySnapshot(
+sessions
+);
+
+
+renderAllCharts(
+sessions
+);
+
+
+renderDifficultyCharts(
+sessions
+);
+
+
+renderHistory(
+sessions
+);
+
+}
+
+
+// ======================================
+// DIFFICULTY SNAPSHOT
+// ======================================
+
+function renderDifficultySnapshot(
+sessions
+){
+
+const difficulties = [
+
+"D1",
+"D2",
+"D3",
+"D4"
+
+];
+
+
+$("difficultySnapshot")
+.innerHTML =
+
+difficulties
+.map(
+difficulty=>{
+
+
+const questions =
+
+getQuestionsByDifficulty(
+sessions,
+difficulty
+);
+
+
+const metrics =
+
+aggregateMetrics(
+questions
+);
+
+
+return `
+
+<div class="difficulty-row">
+
+<div>
+
+<span class="difficulty-badge">
+${difficulty}
+</span>
+
+<div class="small" style="margin-top:5px">
+${questions.length} questions
+</div>
+
+</div>
+
+
+<div>
+
+${
+metrics.accuracy === null
+
+? "—"
+
+:
+
+Math.round(
+metrics.accuracy
+)
++
+"%"
+}
+
+</div>
+
+
+<div>
+
+${
+metrics.fast === null
+
+? "—"
+
+:
+
+Math.round(
+metrics.fast
+)
++
+"%"
+}
+
+</div>
+
+
+<div>
+
+${
+metrics.speed === null
+
+? "—"
+
+:
+
+metrics.speed
+.toFixed(1)
++
+"s"
+}
+
+</div>
+
+</div>
+
+`;
+
+}
+)
+.join("");
+
+}
+
+
+// ======================================
+// LINE CHART
+// ======================================
+
+function drawLineChart(
+canvasId,
+series,
+yMin,
+yMax
+){
+
+const canvas =
+$(canvasId);
+
+
+if(
+!canvas
+)return;
+
+
+const ctx =
+canvas.getContext(
+"2d"
+);
+
+
+const cssWidth =
+
+canvas.clientWidth
+
+||
+
+640;
+
+
+const ratio =
+
+window.devicePixelRatio
+
+||
+
+1;
+
+
+canvas.width =
+
+cssWidth
+*
+ratio;
+
+
+canvas.height =
+
+220
+*
+ratio;
+
+
+ctx.scale(
+ratio,
+ratio
+);
+
+
+const width =
+cssWidth;
+
+
+const height =
+220;
+
+
+const left =
+40;
+
+const right =
+15;
+
+const top =
+15;
+
+const bottom =
+30;
+
+
+const plotWidth =
+
+width
+-
+left
+-
+right;
+
+
+const plotHeight =
+
+height
+-
+top
+-
+bottom;
+
+
+ctx.clearRect(
+0,
+0,
+width,
+height
+);
+
+
+ctx.strokeStyle =
+"#d9d5e6";
+
+
+ctx.lineWidth =
+1;
+
+
+ctx.font =
+"11px Arial";
+
+
+ctx.fillStyle =
+"#777184";
+
+
+for(
+let i=0;
+i<=4;
+i++
+){
+
+const y =
+
+top
++
+plotHeight
+*
+(i/4);
+
+
+ctx.beginPath();
+
+
+ctx.moveTo(
+left,
+y
+);
+
+
+ctx.lineTo(
+width-right,
+y
+);
+
+
+ctx.stroke();
+
+
+const val =
+
+yMax
+
+-
+
+(yMax-yMin)
+*
+(i/4);
+
+
+ctx.fillText(
+
+val.toFixed(
+yMax <= 100
+? 0
+: 1
+),
+
+4,
+
+y+4
+
+);
+
+}
+
+
+const maxPoints =
+
+Math.max(
+
+1,
+
+...series.map(
+s=>s.values.length
+)
+
+);
+
+
+series.forEach(
+s=>{
+
+
+ctx.strokeStyle =
+s.color;
+
+
+ctx.lineWidth =
+2;
+
+
+ctx.beginPath();
+
+
+let started =
+false;
+
+
+s.values.forEach(
+(value,i)=>{
+
+
+if(
+value === null
+||
+value === undefined
+){
+
+return;
+
+}
+
+
+const x =
+
+left
+
++
+
+(
+maxPoints === 1
+
+? plotWidth/2
+
+: plotWidth
+*
+(
+i/(maxPoints-1)
+)
+);
+
+
+const boundedValue =
+
+Math.max(
+yMin,
+Math.min(
+yMax,
+value
+)
+);
+
+
+const y =
+
+top
+
++
+
+plotHeight
+
+*
+
+(
+1
+-
+(
+(boundedValue-yMin)
+/
+(yMax-yMin)
+)
+);
+
+
+if(
+!started
+){
+
+ctx.moveTo(
+x,
+y
+);
+
+started =
+true;
+
+}
+else{
+
+ctx.lineTo(
+x,
+y
+);
+
+}
+
+
+}
+);
+
+
+ctx.stroke();
+
+
+}
+);
+
+}
+
+
+// ======================================
+// ALL TEST CHARTS
+// ======================================
+
+function renderAllCharts(
+sessions
+){
+
+const acc =
+[];
+
+const fast =
+[];
+
+const speed =
+[];
+
+
+sessions.forEach(
+session=>{
+
+
+const m =
+
+aggregateMetrics(
+session.questions
+);
+
+
+acc.push(
+m.accuracy
+);
+
+
+fast.push(
+m.fast
+);
+
+
+speed.push(
+m.speed
+);
+
+
+}
+);
+
+
+drawLineChart(
+
+"allAccuracyChart",
+
+[
+{
+values:acc,
+color:"#6954b4"
+},
+
+{
+values:fast,
+color:"#15975b"
+}
+],
+
+0,
+
+100
+
+);
+
+
+const validSpeed =
+
+speed.filter(
+v=>v !== null
+);
+
+
+const maxSpeed =
+
+validSpeed.length
+
+?
+
+Math.max(
+10,
+...validSpeed
+)
+
+:
+
+10;
+
+
+drawLineChart(
+
+"allSpeedChart",
+
+[
+{
+values:speed,
+color:"#b47d15"
+}
+],
+
+0,
+
+Math.ceil(
+maxSpeed
+)
+
+);
+
+}
+
+
+// ======================================
+// SESSION DIFFICULTY METRIC
+// ======================================
+
+function getSessionDifficultyMetric(
+session,
+difficulty
+){
+
+const questions =
+
+session.questions
+.filter(
+q=>
+
+getQuestionDifficulty(
+q
+)
+
+===
+
+difficulty
+
+);
+
+
+if(
+!questions.length
+){
+
+return null;
+
+}
+
+
+return aggregateMetrics(
+questions
+);
+
+}
+
+
+// ======================================
+// D1-D4 PROGRESS CHARTS
+// ======================================
+
+function renderDifficultyCharts(
+sessions
+){
+
+const difficulties = [
+
+"D1",
+"D2",
+"D3",
+"D4"
+
+];
+
+
+$("difficultyCharts")
+.innerHTML =
+
+difficulties
+.map(
+(difficulty,index)=>`
+
+<div class="card">
+
+<h2>
+${DIFFICULTY_NAMES[difficulty]}
+</h2>
+
+
+<div class="chart-section">
+
+<h3 class="chart-title">
+Accuracy & fluency
+</h3>
+
+<div class="chart-wrap">
+
+<canvas
+id="difficultyAcc${index}"
+width="640"
+height="220">
+</canvas>
+
+</div>
+
+<div class="legend">
+
+<span class="acc">
+Accuracy
+</span>
+
+<span class="fast">
+Correct under 10s
+</span>
+
+</div>
+
+</div>
+
+
+<div class="chart-section">
+
+<h3 class="chart-title">
+Average speed
+</h3>
+
+<div class="chart-wrap">
+
+<canvas
+id="difficultySpeed${index}"
+width="640"
+height="220">
+</canvas>
+
+</div>
+
+<div class="legend">
+
+<span class="speed">
+Seconds/question
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+`
+)
+.join("");
+
+
+difficulties
+.forEach(
+(difficulty,index)=>{
+
+
+const acc =
+[];
+
+const fast =
+[];
+
+const speed =
+[];
+
+
+sessions.forEach(
+session=>{
+
+
+const m =
+
+getSessionDifficultyMetric(
+session,
+difficulty
+);
+
+
+acc.push(
+
+m
+? m.accuracy
+: null
+
+);
+
+
+fast.push(
+
+m
+? m.fast
+: null
+
+);
+
+
+speed.push(
+
+m
+? m.speed
+: null
+
+);
+
+
+}
+);
+
+
+drawLineChart(
+
+`difficultyAcc${index}`,
+
+[
+{
+values:acc,
+color:"#6954b4"
+},
+
+{
+values:fast,
+color:"#15975b"
+}
+],
+
+0,
+
+100
+
+);
+
+
+const validSpeed =
+
+speed.filter(
+v=>v !== null
+);
+
+
+const maxSpeed =
+
+validSpeed.length
+
+?
+
+Math.max(
+10,
+...validSpeed
+)
+
+:
+
+10;
+
+
+drawLineChart(
+
+`difficultySpeed${index}`,
+
+[
+{
+values:speed,
+color:"#b47d15"
+}
+],
+
+0,
+
+Math.ceil(
+maxSpeed
+)
+
+);
+
+
+}
+);
+
+}
+
+
+// ======================================
+// HISTORY
+// ======================================
+
+function renderHistory(
+sessions
+){
+
+if(
+!sessions.length
+){
+
+$("historyList")
+.innerHTML =
+
+`
+<p class="small">
+No matching challenges yet.
+</p>
+`;
+
+return;
+
+}
+
+
+$("historyList")
+.innerHTML =
+
+[...sessions]
+
+.reverse()
+
+.slice(
+0,
+30
+)
+
+.map(
+session=>{
+
+
+const date =
+
+new Date(
+session.date
+)
+.toLocaleDateString(
+"en-GB"
+);
+
+
+return `
+
+<div class="history-row">
+
+<div>
+
+<strong>
+${date}
+</strong>
+
+<div class="small">
+${getSessionLabel(session)}
+·
+${sessionLength(session)}
+questions
+</div>
+
+</div>
+
+<strong>
+${percentage(session)}%
+</strong>
+
+<span>
+${averageSpeed(session).toFixed(1)}s
+</span>
+
+<button
+class="delete-test"
+onclick="deleteSession('${session.id}')">
+Delete
+</button>
+
+</div>
+
+`;
+
+}
+)
+.join("");
+
+}
+
+
+// ======================================
+// DELETE SESSION
+// ======================================
+
+function deleteSession(
+sessionId
+){
+
+const session =
+
+database.sessions
+.find(
+s=>
+
+String(s.id)
+
+===
+
+String(sessionId)
+
+);
+
+
+if(
+!session
+)return;
+
+
+if(
+!confirm(
+"Delete this test from Evie's progress data?"
+)
+){
+
+return;
+
+}
+
+
+database.sessions =
+
+database.sessions
+.filter(
+s=>
+
+String(s.id)
+
+!==
+
+String(sessionId)
+
+);
+
+
+if(
+
+database.lastCompleted
+
+&&
+
+String(
+database.lastCompleted.id
+)
+
+===
+
+String(
+sessionId
+)
+
+){
+
+database.lastCompleted =
+
+database.sessions.length
+
+?
+
+database.sessions[
+database.sessions.length-1
+]
+
+:
+
+null;
+
+}
+
+
+saveDatabase();
+
+
+updateLastResultButton();
+
+
+renderDashboard();
+
+}
+
+
+// ======================================
+// CHATGPT SUMMARY
+// ======================================
+
+function buildAnalysisSummary(
+session
+){
+
+const lines =
+[];
+
+
+lines.push(
+"Evie Mental Maths Session"
+);
+
+
+lines.push(
+
+`Date: ${
+new Date(
+session.date
+)
+.toLocaleString(
+"en-GB"
+)
+}`
+
+);
+
+
+lines.push(
+
+`Mode: ${
+MODE_NAMES[
+session.mode
+]
+||
+session.mode
+}`
+
+);
+
+
+lines.push(
+
+`Level: ${
+getSessionLevel(
+session
+)
+}`
+
+);
+
+
+lines.push(
+
+`Questions: ${
+sessionLength(
+session
+)
+}`
+
+);
+
+
+lines.push(
+
+`Accuracy: ${
+percentage(
+session
+)
+}%`
+
+);
+
+
+lines.push(
+
+`Correct under 10s: ${
+fastCorrectPercentage(
+session
+)
+}%`
+
+);
+
+
+lines.push(
+
+`Average answer time: ${
+averageSpeed(
+session
+)
+.toFixed(2)
+}s`
+
+);
+
+
+lines.push(
+""
+);
+
+
+lines.push(
+"Difficulty breakdown:"
+);
+
+
+[
+"D1",
+"D2",
+"D3",
+"D4"
+]
+.forEach(
+difficulty=>{
+
+
+const questions =
+
+session.questions
+.filter(
+q=>
+
+getQuestionDifficulty(
+q
+)
+
+===
+
+difficulty
+
+);
+
+
+if(
+!questions.length
+)return;
+
+
+const metrics =
+
+aggregateMetrics(
+questions
+);
+
+
+lines.push(
+
+`${difficulty}: `
++
+`${questions.length} questions, `
++
+`${Math.round(metrics.accuracy)}% correct, `
++
+`${Math.round(metrics.fast)}% correct under 10s, `
++
+`${metrics.speed.toFixed(2)}s average`
+
+);
+
+
+}
+);
+
+
+lines.push(
+""
+);
+
+
+lines.push(
+"Questions wrong or 10s+:"
+);
+
+
+const flagged =
+
+session.questions
+.filter(
+q=>
+
+!q.right
+
+||
+
+q.seconds >=
+SLOW_LIMIT
+
+);
+
+
+if(
+!flagged.length
+){
+
+lines.push(
+"None"
+);
+
+}
+
+
+flagged
+.forEach(
+q=>{
+
+
+const symbol =
+
+q.op === "add"
+
+? "+"
+
+: "−";
+
+
+lines.push(
+
+`${q.a} ${symbol} ${q.b} = ${q.correct}; `
+
++
+
+`answer ${q.entered}; `
+
++
+
+`${Number(q.seconds).toFixed(2)}s; `
+
++
+
+`${getQuestionDifficulty(q)}; `
+
++
+
+`${q.right ? "correct" : "incorrect"}`
+
+);
+
+
+}
+);
+
+
+return lines.join(
+"\n"
+);
+
+}
+
+
+// ======================================
+// COPY SUMMARY
+// ======================================
+
+async function copySummary(){
+
+if(
+!currentResults
+)return;
+
+
+const text =
+
+buildAnalysisSummary(
+currentResults
+);
+
+
+try{
+
+await navigator.clipboard
+.writeText(
+text
+);
+
+
+alert(
+"Results summary copied. Paste it into ChatGPT for analysis."
+);
+
+
+}catch(e){
+
+prompt(
+"Copy this summary:",
+text
+);
+
+}
+
+}
+
+
+// ======================================
+// SHARE
+// ======================================
+
+async function shareResults(){
+
+if(
+!currentResults
+)return;
+
+
+const text =
+
+buildAnalysisSummary(
+currentResults
+);
+
+
+if(
+navigator.share
+){
+
+try{
+
+await navigator.share({
+
+title:
+"Evie Mental Maths Results",
+
+text
+
+});
+
+
+return;
+
+
+}catch(e){
+
+if(
+e.name === "AbortError"
+){
+
+return;
+
+}
+
+}
+
+}
+
+
+try{
+
+await navigator.clipboard
+.writeText(
+text
+);
+
+
+alert(
+"Sharing is not available here, so the result summary has been copied instead."
+);
+
+
+}catch(e){
+
+prompt(
+"Copy this summary:",
+text
+);
+
+}
+
+}
+
+
+// ======================================
+// CSV HELPERS
+// ======================================
+
+function csvCell(
+value
+){
+
+return (
+
+'"'
+
++
+
+String(
+value ?? ""
+)
+.replace(
+/"/g,
+'""'
+)
+
++
+
+'"'
+
+);
+
+}
+
+
+function downloadFile(
+filename,
+content,
+type
+){
+
+const blob =
+
+new Blob(
+[content],
+{type}
+);
+
+
+const url =
+
+URL.createObjectURL(
+blob
+);
+
+
+const link =
+
+document.createElement(
+"a"
+);
+
+
+link.href =
+url;
+
+
+link.download =
+filename;
+
+
+document.body
+.appendChild(
+link
+);
+
+
+link.click();
+
+
+link.remove();
+
+
+setTimeout(
+()=>{
+
+URL.revokeObjectURL(
+url
+);
+
+},
+10000
+);
+
+}
+
+
+// ======================================
+// CSV EXPORT
+// ======================================
+
+function exportCSV(
+sessions,
+filename
+){
+
+const rows = [[
+
+"Session Date",
+
+"Mode",
+
+"Level",
+
+"Test Length",
+
+"Question Number",
+
+"Calculation",
+
+"First Number",
+
+"Second Number",
+
+"Operation",
+
+"Question Difficulty",
+
+"Correct Answer",
+
+"Evie's Answer",
+
+"Correct",
+
+"Time Seconds",
+
+"Correct Under 10s",
+
+"Skill",
+
+"Session Accuracy",
+
+"Session Correct Under 10s",
+
+"Average Session Seconds Per Question",
+
+"Total Session Seconds"
+
+]];
+
+
+sessions
+.forEach(
+session=>{
+
+
+session.questions
+.forEach(
+(q,i)=>{
+
+
+rows.push([
+
+new Date(
+session.date
+)
+.toLocaleString(
+"en-GB"
+),
+
+MODE_NAMES[
+session.mode
+]
+||
+session.mode,
+
+getSessionLevel(
+session
+),
+
+sessionLength(
+session
+),
+
+i+1,
+
+`${q.a} ${
+q.op === "add"
+? "+"
+: "-"
+} ${q.b}`,
+
+q.a,
+
+q.b,
+
+q.op,
+
+getQuestionDifficulty(
+q
+),
+
+q.correct,
+
+q.entered,
+
+q.right
+? "Yes"
+: "No",
+
+q.seconds,
+
+(
+q.right
+&&
+Number(q.seconds)
+<
+SLOW_LIMIT
+)
+
+? "Yes"
+
+: "No",
+
+q.skill || "",
+
+percentage(
+session
+)
++
+"%",
+
+fastCorrectPercentage(
+session
+)
++
+"%",
+
+averageSpeed(
+session
+)
+.toFixed(2),
+
+Number(
+session.elapsed
+)
+.toFixed(2)
+
+]);
+
+
+}
+);
+
+
+}
+);
+
+
+const csv =
+
+"\uFEFF"
+
++
+
+rows
+.map(
+row=>
+
+row
+.map(
+csvCell
+)
+.join(",")
+
+)
+.join(
+"\r\n"
+);
+
+
+downloadFile(
+
+filename,
+
+csv,
+
+"text/csv;charset=utf-8"
+
+);
+
+}
+
+
+function dateStamp(){
+
+return new Date()
+.toISOString()
+.slice(
+0,
+10
+);
+
+}
+
+
+function exportSession(
+session
+){
+
+if(
+!session
+)return;
+
+
+exportCSV(
+
+[session],
+
+`Evie_Maths_${dateStamp()}_${session.id}.csv`
+
+);
+
+}
+
+
+function exportAll(){
+
+if(
+!database.sessions.length
+){
+
+alert(
+"No completed challenges yet."
+);
+
+return;
+
+}
+
+
+exportCSV(
+
+database.sessions,
+
+`Evie_Maths_All_${dateStamp()}.csv`
+
+);
+
+}
+
+
+// ======================================
+// BACKUP
+// ======================================
+
+function backupAll(){
+
+const backup = {
+
+type:
+"EvieMentalMathsBackup",
+
+version:10,
+
+exported:
+new Date()
+.toISOString(),
+
+database
+
+};
+
+
+downloadFile(
+
+`Evie_Maths_Backup_${dateStamp()}.json`,
+
+JSON.stringify(
+backup,
+null,
+2
+),
+
+"application/json"
+
+);
+
+}
+
+
+// ======================================
+// RESTORE
+// ======================================
+
+function restoreBackup(
+file
+){
+
+if(
+!file
+)return;
+
+
+const reader =
+
+new FileReader();
+
+
+reader.onload =
+()=>{
+
+
+try{
+
+
+const backup =
+
+JSON.parse(
+reader.result
+);
+
+
+if(
+
+backup.type !==
+"EvieMentalMathsBackup"
+
+||
+
+!backup.database
+
+||
+
+!Array.isArray(
+backup.database.sessions
+)
+
+){
+
+throw Error(
+"Invalid backup"
+);
+
+}
+
+
+if(
+!confirm(
+"Replace Evie's current results with this backup?"
+)
+){
+
+return;
+
+}
+
+
+database = {
+
+sessions:
+backup.database.sessions,
+
+active:
+backup.database.active
+||
+null,
+
+lastCompleted:
+backup.database.lastCompleted
+||
+null
+
+};
+
+
+active =
+null;
+
+
+currentResults =
+null;
+
+
+saveDatabase();
+
+
+updateResume();
+
+updateLastResultButton();
+
+renderDashboard();
+
+
+alert(
+"Evie's history has been restored."
+);
+
+
+}catch(e){
+
+alert(
+"This is not a valid Evie Mental Maths backup."
+);
+
+}
+
+
+$("importFile")
+.value =
+"";
+
+
+};
+
+
+reader.readAsText(
+file
+);
+
+}
+
+
+// ======================================
+// PAUSE
+// ======================================
+
+function pauseChallenge(){
+
+if(
+active
+){
+
+database.active =
+active;
+
+
+saveDatabase();
+
+}
+
+
+goHome();
+
+}
+
+
+// ======================================
+// HOME DISPLAY
+// ======================================
+
+function updateHomeUI(){
+
+$("modeDescription")
+.textContent =
+
+MODE_DESCRIPTIONS[
+selectedMode
+];
+
+
+$("levelDescription")
+.textContent =
+
+getLevelDescription();
+
+}
+
+
+// ======================================
+// MODE BUTTONS
+// ======================================
+
+document
+.querySelectorAll(
+".mode"
+)
+.forEach(
+button=>{
+
+
+button.onclick =
+()=>{
+
+
+selectedMode =
+
+button.dataset.mode;
+
+
+document
+.querySelectorAll(
+".mode"
+)
+.forEach(
+b=>
+
+b.classList.remove(
+"selected"
+)
+
+);
+
+
+button
+.classList
+.add(
+"selected"
+);
+
+
+updateHomeUI();
+
+
+};
+
+
+}
+);
+
+
+// ======================================
+// LEVEL BUTTONS
+// ======================================
+
+document
+.querySelectorAll(
+".level-choice"
+)
+.forEach(
+button=>{
+
+
+button.onclick =
+()=>{
+
+
+selectedLevel =
+
+Number(
+button.dataset.level
+);
+
+
+document
+.querySelectorAll(
+".level-choice"
+)
+.forEach(
+b=>
+
+b.classList.remove(
+"selected"
+)
+
+);
+
+
+button
+.classList
+.add(
+"selected"
+);
+
+
+updateHomeUI();
+
+
+};
+
+
+}
+);
+
+
+// ======================================
+// LENGTH BUTTONS
+// ======================================
+
+document
+.querySelectorAll(
+".length-choice"
+)
+.forEach(
+button=>{
+
+
+button.onclick =
+()=>{
+
+
+selectedLength =
+
+Number(
+button.dataset.length
+);
+
+
+document
+.querySelectorAll(
+".length-choice"
+)
+.forEach(
+b=>
+
+b.classList.remove(
+"selected"
+)
+
+);
+
+
+button
+.classList
+.add(
+"selected"
+);
+
+
+};
+
+
+}
+);
+
+
+// ======================================
+// BUTTON EVENTS
+// ======================================
+
+$("startBtn")
+.onclick =
+startChallenge;
+
+
+$("resumeBtn")
+.onclick =
+resumeChallenge;
+
+
+$("lastResultBtn")
+.onclick =
+viewLastResult;
+
+
+$("pauseBtn")
+.onclick =
+pauseChallenge;
+
+
+$("dashboardBtn")
+.onclick =
+showDashboard;
+
+
+$("resultsDashboardBtn")
+.onclick =
+()=>{
+
+
+if(
+Date.now()
+<
+resultsScreenReadyAt
+){
+
+return;
+
+}
+
+
+showDashboard();
+
+
+};
+
+
+$("resultsHomeBtn")
+.onclick =
+()=>{
+
+
+if(
+Date.now()
+<
+resultsScreenReadyAt
+){
+
+return;
+
+}
+
+
+goHome();
+
+
+};
+
+
+$("dashboardHomeBtn")
+.onclick =
+goHome;
+
+
+$("dashboardFilter")
+.onchange =
+renderDashboard;
+
+
+$("exportSessionBtn")
+.onclick =
+()=>{
+
+exportSession(
+currentResults
+);
+
+};
+
+
+$("exportAllBtn")
+.onclick =
+exportAll;
+
+
+$("backupBtn")
+.onclick =
+backupAll;
+
+
+$("importBtn")
+.onclick =
+()=>{
+
+$("importFile")
+.click();
+
+};
+
+
+$("importFile")
+.onchange =
+e=>{
+
+restoreBackup(
+e.target.files[0]
+);
+
+};
+
+
+$("copySummaryBtn")
+.onclick =
+copySummary;
+
+
+$("shareResultsBtn")
+.onclick =
+shareResults;
+
+
+// ======================================
+// RESIZE CHARTS
+// ======================================
+
+let resizeTimer =
+null;
+
+
+window
+.addEventListener(
+"resize",
+()=>{
+
+
+clearTimeout(
+resizeTimer
+);
+
+
+resizeTimer =
+
+setTimeout(
+()=>{
+
+
+if(
+
+!$("dashboard")
+.classList
+.contains(
+"hidden"
+)
+
+){
+
+renderDashboard();
+
+}
+
+
+},
+150
+);
+
+
+}
+);
+
+
+// ======================================
+// INITIALISE
+// ======================================
+
+loadDatabase();
+
+updateResume();
+
+updateLastResultButton();
+
+updateHomeUI();
+
+show(
+"home"
+);
+
+</script>
+
+</body>
+</html>
